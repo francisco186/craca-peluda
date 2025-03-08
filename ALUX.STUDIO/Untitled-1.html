@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravação de Instrumentos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Gravador F.Miranda</h1>
+    <div class="instrument-controls">
+        <h2>Grave cada instrumento</h2>
+        <div class="instrument">
+            <button id="btn-instrument1">Gravar Instrumento 1</button>
+            <button id="btn-stop1" disabled>Parar</button>
+            <audio id="audio1" controls></audio>
+            <button id="btn-upload1">Enviar</button>
+            <button id="btn-download1">Baixar Processado</button>
+        </div>
+        <div class="instrument">
+            <button id="btn-instrument2">Gravar Instrumento 2</button>
+            <button id="btn-stop2" disabled>Parar</button>
+            <audio id="audio2" controls></audio>
+            <button id="btn-upload2">Enviar</button>
+            <button id="btn-download2">Baixar Processado</button>
+        </div>
+        <div class="instrument">
+            <button id="btn-instrument3">Gravar Instrumento 3</button>
+            <button id="btn-stop3" disabled>Parar</button>
+            <audio id="audio3" controls></audio>
+            <button id="btn-upload3">Enviar</button>
+            <button id="btn-download3">Baixar Processado</button>
+        </div>
+        <button id="btn-play-all" disabled>Tocar Melodia Completa</button>
+        <div class="general-controls">
+            <button id="btn-delete-all">Deletar Tudo</button>
+            <button id="btn-restart-all">Reiniciar Tudo</button>
+        </div>
+        <div class="file-controls">
+            <button id="btn-import">Importar Trabalho</button>
+            <input type="file" id="file-input" accept=".json" style="display: none;">
+            <button id="btn-export">Exportar Trabalho</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

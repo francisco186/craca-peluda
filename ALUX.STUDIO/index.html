@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravação de Instrumentos com Equalizadores</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Gravação de Instrumentos</h1>
+
+    <div class="instrument-controls">
+        <h2>Grave cada instrumento</h2>
+
+        <!-- Controle do Instrumento 1 -->
+        <div class="instrument">
+            <button id="btn-record1">Gravar Instrumento 1</button>
+            <button id="btn-stop1" disabled>Parar</button>
+            <audio id="audio1" controls></audio>
+            <div class="equalizer">
+                <label for="bass1">Graves</label>
+                <input type="range" id="bass1" min="0" max="100" value="50">
+                <label for="mid1">Médios</label>
+                <input type="range" id="mid1" min="0" max="100" value="50">
+                <label for="treble1">Agudos</label>
+                <input type="range" id="treble1" min="0" max="100" value="50">
+            </div>
+        </div>
+
+        <!-- Controle do Instrumento 2 -->
+        <div class="instrument">
+            <button id="btn-record2">Gravar Instrumento 2</button>
+            <button id="btn-stop2" disabled>Parar</button>
+            <audio id="audio2" controls></audio>
+            <div class="equalizer">
+                <label for="bass2">Graves</label>
+                <input type="range" id="bass2" min="0" max="100" value="50">
+                <label for="mid2">Médios</label>
+                <input type="range" id="mid2" min="0" max="100" value="50">
+                <label for="treble2">Agudos</label>
+                <input type="range" id="treble2" min="0" max="100" value="50">
+            </div>
+        </div>
+
+        <!-- Controle do Instrumento 3 -->
+        <div class="instrument">
+            <button id="btn-record3">Gravar Instrumento 3</button>
+            <button id="btn-stop3" disabled>Parar</button>
+            <audio id="audio3" controls></audio>
+            <div class="equalizer">
+                <label for="bass3">Graves</label>
+                <input type="range" id="bass3" min="0" max="100" value="50">
+                <label for="mid3">Médios</label>
+                <input type="range" id="mid3" min="0" max="100" value="50">
+                <label for="treble3">Agudos</label>
+                <input type="range" id="treble3" min="0" max="100" value="50">
+            </div>
+        </div>
+
+        <!-- Botões Gerais -->
+        <div class="general-controls">
+            <button id="btn-play-all" disabled>Tocar Melodia Completa</button>
+            <button id="btn-delete-all">Deletar Tudo</button>
+            <button id="btn-restart-all">Reiniciar Tudo</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Minha Empresa. Todos os direitos reservados.</p>
+        <nav>
+            <a href="sobre.html">Sobre nós</a> |
+            <a href="contato.html">Contato</a>
+        </nav>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
