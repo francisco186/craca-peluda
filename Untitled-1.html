@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequenciador de Áudio</title>
+    <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
+    <script src="https://unpkg.com/wavesurfer.js@7/dist/plugins/regions.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        .instrument-controls,
+        .instrument {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .record-indicator {
+            width: 15px;
+            height: 15px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: none;
+        }
+
+        .recording .record-indicator {
+            display: block;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .record-btn {
+            background-color: #ff4444;
+            color: white;
+        }
+
+        .play-btn {
+            background-color: #44ff44;
+        }
+
+        .stop-btn {
+            background-color: #ff9900;
+        }
+
+        .edit-btn,
+        .clean-btn,
+        .reset-btn {
+            background-color: #008CBA;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #d9534f;
+            color: white;
+        }
+
+        .waveform {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="instrument-controls">
+        <h1>Sequenciador de Áudio</h1>
+        <button class="add-track-btn" onclick="addNewTrack()">Adicionar Pista</button>
+        <button class="play-all-btn" onclick="playAllTracks()">Tocar Todas</button>
+        <button class="reset-btn" onclick="resetSequencer()">Resetar</button>
+    </div>
+    <div id="instruments-container"></div>
+
+    <script>
+        let trackCount = 0;
+        let tracks = {};
+        let audioChunks = {};
+        let mediaRecorder;
+
+        function addNewTrack() {
+            trackCount++;
+            let trackId = trackCount;
+            let track = {
+                wavesurfer: null,
+                audioBlob: null,
+                mediaRecorder: null,
+                audioUrl: null
+            };
+            tracks[trackId] = track;
+
+            let container = document.getElementById('instruments-container');
+            let newTrack = document.createElement('div');
+            newTrack.className = 'instrument';
+            newTrack.setAttribute('data-track-id', trackId);
+            newTrack.innerHTML = `
+                <h2>Pista ${trackId}</h2>
+                <div class="record-indicator"></div>
+                <button class="record-btn" onclick="startRecording(${trackId})">Gravar</button>
+                <button class="stop-btn" onclick="stopRecording(${trackId})">Parar Gravação</button>
+                <button class="play-btn" onclick="playRecordedAudio(${trackId})">Reproduzir</button>
+                <button class="stop-btn" onclick="stopPlayback(${trackId})">Parar</button>
+                <button class="edit-btn" onclick="cutAudio(${trackId})">Cortar</button>
+                <button class="clean-btn" onclick="cleanNoise(${trackId})">Limpar Ruídos</button>
+                <button class="delete-btn" onclick="deleteTrack(${trackId})">Apagar</button>
+                <div class="waveform" id="waveform${trackId}"></div>
+            `;
+            container.appendChild(newTrack);
+            tracks[trackId].wavesurfer = WaveSurfer.create({
+                container: `#waveform${trackId}`,
+                waveColor: 'violet',
+                progressColor: 'purple',
+                height: 100,
+            });
+        }
+
+        function startRecording(trackId) {
+            const track = tracks[trackId];
+            if (navigator.mediaDevices) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function (stream) {
+                        track.mediaRecorder = new MediaRecorder(stream);
+                        let chunks = [];
+                        track.mediaRecorder.ondataavailable = function (event) {
+                            chunks.push(event.data);
+                        };
+                        track.mediaRecorder.onstop = function () {
+                            track.audioBlob = new Blob(chunks, { type: 'audio/wav' });
+                            track.audioUrl = URL.createObjectURL(track.audioBlob);
+                            track.wavesurfer.load(track.audioUrl);
+                        };
+                        track.mediaRecorder.start();
+                        document.querySelector(`[data-track-id="${trackId}"]`).classList.add('recording');
+                    })
+                    .catch(function (error) {
+                        console.error('Error accessing media devices.', error);
+                    });
+            }
+        }
+
+        function stopRecording(trackId) {
+            const track = tracks[trackId];
+            if (track.mediaRecorder) {
+                track.mediaRecorder.stop();
+                document.querySelector(`[data-track-id="${trackId}"]`).classList.remove('recording');
+            }
+        }
+
+        function playRecordedAudio(trackId) {
+            const track = tracks[trackId];
+            if (track.audioUrl) {
+                track.wavesurfer.play();
+            }
+        }
+
+        function stopPlayback(trackId) {
+            const track = tracks[trackId];
+            if (track.wavesurfer) {
+                track.wavesurfer.stop();
+            }
+        }
+
+        function cutAudio(trackId) {
+            alert("Função de cortar áudio não implementada.");
+        }
+
+        function cleanNoise(trackId) {
+            alert("Função de limpar ruídos não implementada.");
+        }
+
+        function deleteTrack(trackId) {
+            const track = tracks[trackId];
+            track.wavesurfer.destroy();
+            delete tracks[trackId];
+            document.querySelector(`[data-track-id="${trackId}"]`).remove();
+        }
+
+        function playAllTracks() {
+            Object.values(tracks).forEach(track => {
+                if (track.audioUrl) {
+                    track.wavesurfer.play();
+                }
+            });
+        }
+
+        function resetSequencer() {
+            Object.values(tracks).forEach(track => {
+                track.wavesurfer.destroy();
+            });
+            tracks = {};
+            trackCount = 0;
+            document.getElementById('instruments-container').innerHTML = '';
+        }
+    </script>
+</body>
+
+</html>
